@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+    document.documentElement.style.fontSize = document.documentElement.clientWidth / 37.5 + 'px'
+  </script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body,
+    #app {
+      height: 100%;
+    }
+
+    div {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .slider-page {
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .scroll-wraper {
+      position: absolute;
+      /* 这里可以手动去算出来 */
+      width: 150rem;
+      height: 100%;
+      flex-direction: row;
+    }
+
+    .slider {
+      height: 100%;
+      /* 占满一页 */
+      flex: 1;
+    }
+
+    .slider:nth-child(1) {
+      background-color: rebeccapurple;
+    }
+
+    .slider:nth-child(2) {
+      background-color: rgb(121, 136, 35);
+    }
+
+    .slider:nth-child(3) {
+      background-color: rgb(20, 87, 132);
+    }
+
+    .slider:nth-child(4) {
+      background-color: rgb(25, 6, 72);
+    }
+
+    .inner {
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="slider-page">
+      <div class="scroll-wraper">
+        <div class="slider">
+          <div class="inner">page1</div>
+        </div>
+        <div class="slider">
+          <div class="inner">page2</div>
+        </div>
+        <div class="slider">
+          <div class="inner">page3</div>
+        </div>
+        <div class="slider">
+          <div class="inner">page4</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    const scrollWraper = document.querySelector('.scroll-wraper'),
+      sliderAll = scrollWraper.querySelectorAll('.slider')
+    pageWidth = sliderAll[0].offsetWidth
+
+
+    let start =0,
+    distance = 0,
+    pageIndex = 0,
+    moved =false
+
+    let pageCount = sliderAll.length
+    console.log('attt',scrollWraper.style)
+    function init(){
+      handleEvent()
+    }
+
+    function handleEvent() {
+      scrollWraper.addEventListener('touchstart', handelStart, false)
+      scrollWraper.addEventListener('touchend', handelEnd, false)
+      scrollWraper.addEventListener('touchmove', handelMove, false)
+    }
+
+    function handelStart(e){
+      start = e.touches[0].clientX  
+    }
+    function handelEnd(e){
+      if(moved){
+        // 处理回摆
+        if(Math.abs(distance) >= pageWidth / 3){
+          // 要移动 区分是左移还是右移动
+          if(distance > 0){
+            pageIndex --
+          }
+          if(distance < 0){
+            pageIndex ++
+          }
+        }
+      }
+      setTranslate(-pageWidth * pageIndex)
+      start = 0
+      distance = 0
+      moved = false
+    }
+    function handelMove(e){
+     
+      let end = e.touches[0].clientX
+      distance = end - start 
+      if((end - start < 0 && pageIndex == pageCount -1) ||(end - start > 0 && pageIndex == 0) ){
+        console.log('哥哥不要')
+        return
+      }
+      // 进行滑动的动画
+      moved = true
+      setTranslate(-pageWidth * pageIndex + distance)
+    }
+
+    function setTranslate(x){
+      scrollWraper.style.transition = 'all .3s'
+      scrollWraper.style.transform = `translateX(${x}px)`;
+    }
+
+    init()
+
+  </script>
+  
+</body>
+
+</html>
